@@ -63,7 +63,7 @@ jooq {
 				records = true
 				//generatedAnnotation = true
 				jpaAnnotations = true
-				//validationAnnotations = true
+				validationAnnotations = true
 				//springAnnotations = true
 				//immutablePojos = true
 			}
