@@ -1,0 +1,75 @@
+plugins {
+	id 'org.springframework.boot' version '2.2.3.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+	id 'java'
+	id "org.flywaydb.flyway" version "6.1.4"
+	id 'nu.studer.jooq' version '4.0'
+}
+
+group = 'com.adiSuper'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+	implementation 'org.springframework.boot:spring-boot-starter-jooq'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.flywaydb:flyway-core:6.1.4'
+	implementation 'org.jooq:jooq'
+	implementation 'com.zaxxer:HikariCP:3.4.2'
+
+	runtimeOnly 'org.postgresql:postgresql'
+	jooqRuntime 'org.postgresql:postgresql:42.2.9'
+
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+}
+
+test {
+	useJUnitPlatform()
+}
+
+jooq {
+	version = '3.12.3'
+	edition = 'OSS'
+
+	autha(sourceSets.main) {
+		jdbc {
+			driver = 'org.postgresql.Driver'
+			url = 'jdbc:postgresql://localhost:5432/autha'
+			user = 'postgres'
+			password = ''
+		}
+		generator {
+
+			database {
+				name = 'org.jooq.meta.postgres.PostgresDatabase'
+				includes = '.*'
+				excludes = 'pg_catalog\\..*|information_schema\\..*|core\\.flyway_schema_history'
+
+			}
+
+			generate {
+				pojos = true
+				//daos = true
+				relations = true
+				records = true
+				//generatedAnnotation = true
+				jpaAnnotations = true
+				//validationAnnotations = true
+				//springAnnotations = true
+				//immutablePojos = true
+			}
+			target {
+				packageName = 'com.adiSuper.generated'
+			}
+		}
+	}
+}
