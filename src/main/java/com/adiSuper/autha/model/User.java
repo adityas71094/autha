@@ -7,8 +7,10 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.UUID;
 
 
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 @Entity
 @Table(name = "users", schema = "core", uniqueConstraints = {
         @UniqueConstraint(name = "users_pkey", columnNames = {"id"}),
@@ -21,14 +23,15 @@ import java.io.Serializable;
 })
 public class User implements Serializable {
 
-    private static final long serialVersionUID = 1816562323;
+    private static final long serialVersionUID = -1005314099;
 
-    private Integer id;
+    private UUID    id;
     private String  firstName;
     private String  lastName;
     private String  username;
     private String  emailId;
     private String  passwordHash;
+    private Boolean enabled = false;
     private String password;
 
     public User() {}
@@ -40,16 +43,17 @@ public class User implements Serializable {
         this.username = value.username;
         this.emailId = value.emailId;
         this.passwordHash = value.passwordHash;
-        this.password = value.password;
+        this.enabled = value.enabled;
     }
 
     public User(
-            Integer id,
+            UUID    id,
             String  firstName,
             String  lastName,
             String  username,
             String  emailId,
-            String  passwordHash
+            String  passwordHash,
+            Boolean enabled
     ) {
         this.id = id;
         this.firstName = firstName;
@@ -57,16 +61,17 @@ public class User implements Serializable {
         this.username = username;
         this.emailId = emailId;
         this.passwordHash = passwordHash;
+        this.enabled = enabled;
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, precision = 32)
-    public Integer getId() {
+    @GeneratedValue
+    @Column(name = "id", nullable = false)
+    public UUID getId() {
         return this.id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -124,10 +129,20 @@ public class User implements Serializable {
         this.passwordHash = passwordHash;
     }
 
+    @Column(name = "enabled", nullable = false)
+    @JsonIgnore
+    public Boolean getEnabled() {
+        return this.enabled;
+    }
 
-    @NotNull
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
     @Transient
     @Size(max = 100)
+    @JsonIgnore
+    @NotNull
     public String getPassword() {
         return this.password;
     }
@@ -146,7 +161,7 @@ public class User implements Serializable {
         sb.append(", ").append(username);
         sb.append(", ").append(emailId);
         sb.append(", ").append(passwordHash);
-
+        sb.append(", ").append(enabled);
         sb.append(")");
         return sb.toString();
     }

@@ -12,6 +12,7 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -28,8 +29,7 @@ public class UserService {
         return users;
     }
 
-
-    public User getUser( Integer id)
+    public User getUser(UUID id)
     {
         Optional<User> user = userRepository.findById(id);
         if(!user.isPresent())
@@ -38,7 +38,6 @@ public class UserService {
         }
         return user.get();
     }
-
 
 
     public int addUser(User user)
@@ -53,8 +52,7 @@ public class UserService {
         return 1;
     }
 
-
-    public int updateUser(User user, Integer id)
+    public int updateUser(User user, UUID id)
     {
         if (isDBConstraintsSatisfied(user))
         {
@@ -74,7 +72,7 @@ public class UserService {
         return 0;
     }
 
-    public int removeUser(Integer id)
+    public int removeUser(UUID id)
     {
         if (userRepository.existsById(id)) {
             userRepository.deleteById(id);

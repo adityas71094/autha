@@ -11,6 +11,7 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 public class UserController {
@@ -31,7 +32,7 @@ public class UserController {
     }
 
     @GetMapping ("/users/{id}")
-    public User getUser(@PathVariable Integer id)
+    public User getUser(@PathVariable UUID id)
     {
         try
         {
@@ -58,9 +59,8 @@ public class UserController {
         return 1;
     }
 
-
     @PatchMapping("/users/{id}")
-    public int patchUser(@RequestBody User user, @PathVariable Integer id)
+    public int patchUser(@RequestBody User user, @PathVariable UUID id)
     {
         try
         {
@@ -74,7 +74,7 @@ public class UserController {
     }
 
     @DeleteMapping("/users/{id}")
-    public int removeUser(@PathVariable Integer id)
+    public int removeUser(@PathVariable UUID id)
     {
         try
         {
