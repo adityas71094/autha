@@ -46,23 +46,6 @@ public class User implements Serializable {
         this.enabled = value.enabled;
     }
 
-    public User(
-            UUID    id,
-            String  firstName,
-            String  lastName,
-            String  username,
-            String  emailId,
-            String  passwordHash,
-            Boolean enabled
-    ) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.username = username;
-        this.emailId = emailId;
-        this.passwordHash = passwordHash;
-        this.enabled = enabled;
-    }
 
     @Id
     @GeneratedValue
@@ -140,9 +123,8 @@ public class User implements Serializable {
     }
 
     @Transient
-    @Size(max = 100)
-    @JsonIgnore
     @NotNull
+    @Size(max = 100)
     public String getPassword() {
         return this.password;
     }
@@ -160,7 +142,6 @@ public class User implements Serializable {
         sb.append(", ").append(lastName);
         sb.append(", ").append(username);
         sb.append(", ").append(emailId);
-        sb.append(", ").append(passwordHash);
         sb.append(", ").append(enabled);
         sb.append(")");
         return sb.toString();

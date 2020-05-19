@@ -16,7 +16,6 @@ import java.util.UUID;
 @RestController
 public class UserController {
 
-
     @Autowired
     private UserService userService;
     
@@ -86,6 +85,5 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }
     }
-
 
 }

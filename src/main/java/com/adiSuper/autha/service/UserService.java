@@ -6,6 +6,7 @@ import com.adiSuper.generated.core.Tables;
 import com.adiSuper.generated.core.tables.records.UsersRecord;
 import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityExistsException;
@@ -23,6 +24,9 @@ public class UserService {
     @Autowired
     private DSLContext db;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public List<User> getUsers()
     {
         List<User> users = userRepository.findAll();
@@ -39,10 +43,13 @@ public class UserService {
         return user.get();
     }
 
-
     public int addUser(User user)
     {
-        if (isDBConstraintsSatisfied(user)) {
+        if (isDBConstraintsSatisfied(user))
+        {
+            String password = user.getPassword();
+            String passwordHash = passwordEncoder.encode(password);
+            user.setPasswordHash(passwordHash);
             User returnUser = userRepository.save(user);
         }
         else
