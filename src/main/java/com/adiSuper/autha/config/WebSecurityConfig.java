@@ -1,13 +1,14 @@
 package com.adiSuper.autha.config;
 
-import org.jooq.DSLContext;
+import com.adiSuper.autha.authorization.AbacPermissionEvaluator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
@@ -16,47 +17,29 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 
-import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.adiSuper.generated.core.Tables.AUTHORITIES;
-import static com.adiSuper.generated.core.Tables.USERS;
-import static org.jooq.impl.DSL.field;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    DataSource dataSource;
+    AbacPermissionEvaluator permissionEvaluator;
 
-    @Autowired
-    DSLContext db;
+   @Autowired
+    @Qualifier("principalUserDetailsService")
+    UserDetailsService userDetailsService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception
     {
-        http.csrf().disable().authorizeRequests().anyRequest().hasRole("USER").and().httpBasic();
+        http.csrf().disable()
+                .authorizeRequests()
+                //.mvcMatchers("/users/{id}").access("")
+                .anyRequest().hasRole("USER").and().httpBasic();
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception
-    {
-        String usersByUsernameQuery = db.select(USERS.USERNAME, USERS.PASSWORD_HASH, USERS.ENABLED).from(USERS).
-                where(field(USERS.USERNAME).eq("?"))
-                .getSQL();
-
-        String authoritiesByUsernameQuery = db.select(USERS.USERNAME, AUTHORITIES.AUTHORITY).
-                from(AUTHORITIES).
-                innerJoin(USERS).on(field(USERS.ID).eq(field(AUTHORITIES.USER_ID))).where(field(USERS.USERNAME).eq("?"))
-                .getSQL();
-
-        auth.jdbcAuthentication()
-                .dataSource(dataSource)
-                .usersByUsernameQuery(usersByUsernameQuery)
-                .authoritiesByUsernameQuery(authoritiesByUsernameQuery);
-    }
 
     @Bean
     public static PasswordEncoder passwordEncoder() {

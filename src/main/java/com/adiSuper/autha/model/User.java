@@ -2,6 +2,7 @@ package com.adiSuper.autha.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -12,6 +13,7 @@ import java.util.UUID;
 
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "users", schema = "core", uniqueConstraints = {
         @UniqueConstraint(name = "users_pkey", columnNames = {"id"}),
         @UniqueConstraint(name = "username_unique", columnNames = {"username"}),
@@ -33,6 +35,9 @@ public class User implements Serializable {
     private String  passwordHash;
     private Boolean enabled = false;
     private String password;
+    private Boolean accLocked = false;
+    private Boolean accExpired = false;
+    private Boolean credExpired = false;
 
     public User() {}
 
@@ -44,6 +49,9 @@ public class User implements Serializable {
         this.emailId = value.emailId;
         this.passwordHash = value.passwordHash;
         this.enabled = value.enabled;
+        this.accLocked = value.accLocked;
+        this.accExpired = value.accExpired;
+        this.credExpired = value.credExpired;
     }
 
 
@@ -125,12 +133,43 @@ public class User implements Serializable {
     @Transient
     @NotNull
     @Size(max = 100)
+    @JsonIgnore
     public String getPassword() {
         return this.password;
     }
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Column(name = "acc_locked", nullable = false)
+    @JsonIgnore
+    public Boolean getAccLocked() {
+        return this.accLocked;
+    }
+
+    public void setAccLocked(Boolean accLocked) {
+        this.accLocked = accLocked;
+    }
+
+    @Column(name = "acc_expired", nullable = false)
+    @JsonIgnore
+    public Boolean getAccExpired() {
+        return this.accExpired;
+    }
+
+    public void setAccExpired(Boolean accExpired) {
+        this.accExpired = accExpired;
+    }
+
+    @Column(name = "cred_expired", nullable = false)
+    @JsonIgnore
+    public Boolean getCredExpired() {
+        return this.credExpired;
+    }
+
+    public void setCredExpired(Boolean credExpired) {
+        this.credExpired = credExpired;
     }
 
     @Override
@@ -143,6 +182,9 @@ public class User implements Serializable {
         sb.append(", ").append(username);
         sb.append(", ").append(emailId);
         sb.append(", ").append(enabled);
+        sb.append(", ").append(accLocked);
+        sb.append(", ").append(accExpired);
+        sb.append(", ").append(credExpired);
         sb.append(")");
         return sb.toString();
     }

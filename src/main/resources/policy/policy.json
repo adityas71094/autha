@@ -1,0 +1,15 @@
+[
+  {
+    "name": "Admin",
+    "description": "Admin can do all.",
+    "target": "subject.simpleAuthorities.contains('ROLE_ADMIN')",
+    "condition": "true"
+  },
+  {
+    "name": "Self edit user details",
+    "description": "User can edit their own details.",
+    "target": "subject.simpleAuthorities.contains('ROLE_USER')",
+    "condition": "subject.id == resource.id"
+  }
+
+]

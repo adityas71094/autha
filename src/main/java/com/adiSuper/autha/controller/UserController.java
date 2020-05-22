@@ -1,9 +1,14 @@
 package com.adiSuper.autha.controller;
 
+import com.adiSuper.autha.model.PrincipalUser;
 import com.adiSuper.autha.model.User;
 import com.adiSuper.autha.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -15,6 +20,8 @@ import java.util.UUID;
 
 @RestController
 public class UserController {
+
+    private static Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserService userService;
@@ -30,9 +37,11 @@ public class UserController {
         return users;
     }
 
+    @PreAuthorize("hasPermission(#id, 'User', 'read')")
     @GetMapping ("/users/{id}")
     public User getUser(@PathVariable UUID id)
     {
+        PrincipalUser x = (PrincipalUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         try
         {
               return userService.getUser(id);
