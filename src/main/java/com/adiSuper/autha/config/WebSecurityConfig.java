@@ -1,6 +1,5 @@
 package com.adiSuper.autha.config;
 
-import com.adiSuper.autha.authorization.AbacPermissionEvaluator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -25,9 +24,6 @@ import java.util.Map;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    AbacPermissionEvaluator permissionEvaluator;
-
-   @Autowired
     @Qualifier("principalUserDetailsService")
     UserDetailsService userDetailsService;
 
@@ -36,7 +32,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     {
         http.csrf().disable()
                 .authorizeRequests()
-                //.mvcMatchers("/users/{id}").access("")
                 .anyRequest().hasRole("USER").and().httpBasic();
     }
 

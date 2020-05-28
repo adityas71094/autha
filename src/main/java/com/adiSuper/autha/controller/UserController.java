@@ -1,6 +1,5 @@
 package com.adiSuper.autha.controller;
 
-import com.adiSuper.autha.model.PrincipalUser;
 import com.adiSuper.autha.model.User;
 import com.adiSuper.autha.service.UserService;
 import org.slf4j.Logger;
@@ -8,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -41,7 +39,6 @@ public class UserController {
     @GetMapping ("/users/{id}")
     public User getUser(@PathVariable UUID id)
     {
-        PrincipalUser x = (PrincipalUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         try
         {
               return userService.getUser(id);
@@ -67,6 +64,7 @@ public class UserController {
         return 1;
     }
 
+    @PreAuthorize("hasPermission(#id, 'User', 'update')")
     @PatchMapping("/users/{id}")
     public int patchUser(@RequestBody User user, @PathVariable UUID id)
     {
@@ -81,6 +79,7 @@ public class UserController {
 
     }
 
+    @PreAuthorize("hasPermission(#id, 'User', 'delete')")
     @DeleteMapping("/users/{id}")
     public int removeUser(@PathVariable UUID id)
     {
